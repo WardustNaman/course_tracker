@@ -1,0 +1,15 @@
+<tr>
+	<td><%= link_to @student.name, @student %></td>
+	<td><%= @student.email %></td>
+	<td><%= @student.major %></td>
+	<td>
+		<%if @student.courses.empty? %>
+		<p>N/A</p>
+		<% else %>
+		<% @student.courses.each do |course| %>
+		<%= course.name %><br/>
+		<% end %>
+		<% end %>
+	</td>
+	<td><%= link_to 'Edit', edit_student_path(@student) %> | <%= link_to 'Destroy', @student, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+</tr>

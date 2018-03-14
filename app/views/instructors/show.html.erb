@@ -1,0 +1,14 @@
+<% if notice %>
+<div class="alert alert-success">
+	<%= notice %>
+</div>
+<%end%>
+
+<%= render 'instructor-info',instructor: @instructor%>
+
+<%= link_to 'Edit', edit_instructor_path(@instructor) %> |
+<%= link_to 'Back', instructors_path %>
+
+<script type="text/javascript">
+	$.growl.notice({ message: "Successfully created Instructor" });
+</script>

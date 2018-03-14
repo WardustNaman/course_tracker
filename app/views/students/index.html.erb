@@ -1,0 +1,43 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Students</h1>
+
+
+<div class="row">
+  <div class="col-md-8">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Major</th>
+          <th>Course Enrolled</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @students.each do |student| %>
+        <tr>
+          <td><%= link_to student.name, student %></td>
+          <td><%= student.email %></td>
+          <td><%= student.major %></td>
+          <td><ul>
+            <% student.courses.each do |course| %>
+            <li><%= course.name %></li>
+            <% end %>
+          </ul></td>
+          <td><%= link_to 'Edit', edit_student_path(student)%> | <%= link_to 'Destroy', student, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-4">
+    <h2>Add Student</h2>
+    <%= render 'form', student: @student%>
+  </div>
+</div>
+
+<%#= link_to 'New Student', new_student_path %>
+<%= will_paginate(@students, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer) %>

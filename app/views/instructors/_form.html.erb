@@ -1,0 +1,158 @@
+<%= form_for(instructor,remote: true, local: true, id:'form') do |form| %>
+<% if instructor.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(instructor.errors.count, "error") %> prohibited this instructor from being saved:</h2>
+
+  <ul>
+    <% instructor.errors.full_messages.each do |message| %>
+    <li><%= message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+
+<div class="form-group" id="nameGroup">
+  <%= form.label :name %>
+  <%= form.text_field :name, id: :instructor_name, class: "form-control" %>
+  <span id="nameError"></span>
+</div>
+
+<div class="form-group" id="emailGroup">
+  <%= form.label :email %>
+  <%= form.text_field :email, id: :instructor_email, class: "form-control" %>
+  <span id="emailError"></span>
+</div>
+
+<div class="form-group">
+  <%= form.label :bio %>
+  <%= form.text_area :bio, id: :instructor_bio, class: "form-control" %>
+</div>
+
+<h4>Select Courses</h4>
+<%= form.collection_check_boxes :course_ids, Course.all, :id, :name do |course| %>
+<%= course.check_box %>
+<%= course.label %>
+<% end %>
+
+<div class="actions">
+  <%= form.submit "Submit", class: "btn btn-success" %> or
+  <a href="#" id="reset">reset</a>
+</div>
+<% end %>
+
+<script type="text/javascript">
+  var formHandle = document.getElementById('form');
+  var resetHandle = document.getElementById('reset'); 
+  var nameGroupHandle = document.getElementById('nameGroup')
+  var emailGroupHandle = document.getElementById('emailGroup')
+  var validator = {
+    nameValid: false,
+    emailValid: false
+  }
+  var nameFormat = /^(([A-Za-z]+[\-\']?)*([A-Za-z]+)?\s)+([A-Za-z]+[\-\']?)*([A-Za-z]+)?$/;
+  var emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  resetHandle.addEventListener('click', function(e){
+    e.preventDefault();
+    formHandle.reset();
+  },false);
+  var nameHandle = document.getElementById('instructor_name');
+  var nameErrorHandle = document.getElementById('nameError');
+// nameHandle.addEventListener('blur', function(){
+//   var xhr = new XMLHttpRequest();
+//   xhr.open('GET','/instructors/check_name_present?name=' + nameHandle.value, true)
+//   xhr.onreadystatechange = function(){
+//     if(xhr.readyState === 4 && xhr.status === 200){
+//       var response = JSON.parse(xhr.responseText);
+//       nameErrorHandle.innerHTML = response.msg;
+//     }
+//   }
+//   xhr.send()
+//   }, false);
+nameHandle.addEventListener('blur', function(){
+  nameValidation();
+}, false)
+nameHandle.addEventListener('focus', function(){
+  nameErrorHandle.innerHTML = "";
+},false);
+
+function nameValidation(){
+  if(nameHandle.value === ""){
+    validator.nameValid = false;
+    nameErrorHandle.innerHTML = "Cn't be blank"
+    nameGroupHandle.classList.remove('formSuccess')
+    nameGroupHandle.classList.add('formError')
+  }
+  else if(!nameFormat.test(nameHandle)){
+    validator.nameValid = false;
+    nameErrorHandle.innerHTML = "Only Alphabets Plzz"
+    nameGroupHandle.classList.remove('formSuccess')
+    nameGroupHandle.classList.add('formError')
+  }
+  else{
+    validator.nameValid = true;
+    nameErrorHandle.innerHTML = "Nice"
+    nameGroupHandle.classList.remove('formError')
+    nameGroupHandle.classList.add('formSuccess')
+  }
+}
+
+var emailHandle = document.getElementById('instructor_email');
+var emailErrorHandle = document.getElementById('emailError');
+// emailHandle.addEventListener('blur', function(){
+//   var xhr = new XMLHttpRequest();
+//   xhr.open('GET','/instructors/check_email_present?email=' + emailHandle.value, true)
+//   xhr.onreadystatechange = function(){
+//     if(xhr.readyState === 4 && xhr.status === 200){
+//       var response = JSON.parse(xhr.responseText);
+//       emailErrorHandle.innerHTML = response.msg;
+//     }
+//   }
+//   xhr.send()
+//   }, false);
+emailHandle.addEventListener('blur', function(){
+  emailValidation();
+}, false)
+emailHandle.addEventListener('focus', function(){
+  emailErrorHandle.innerHTML = "";
+},false);
+
+function emailValidation(){
+  if(emailHandle.value === ""){
+    validator.emailValid = false;
+    emailErrorHandle.innerHTML = "Cn't be blank"
+    emailGroupHandle.classList.remove('formSuccess')
+    emailGroupHandle.classList.add('formError')
+  }
+  else if(emailFormat.test(emailHandle)){
+    validator.emailValid = false;
+    emailErrorHandle.innerHTML = "Vaild Email Plzz"
+    emailGroupHandle.classList.remove('formSuccess')
+    emailGroupHandle.classList.add('formError')
+  }
+  else{
+    validator.emailValid = true;
+    emailErrorHandle.innerHTML = "Nice"
+    emailGroupHandle.classList.remove('formError')
+    emailGroupHandle.classList.add('formSuccess')
+  }
+}
+formHandle.addEventListener('submit', function(e){
+  nameValidation();
+  emailValidation();
+  if(Object.values(validator).includes(false)){
+    e.preventDefault();
+        // setTimeout(function(){
+        //   submitHandle.disabled = false;
+        // }, 100);
+      }
+    }, false)
+document.querySelector('#reset').addEventListener('click', function(e){
+  e.preventDefault();
+  formHandle.reset();
+  nameErrorHandle.innerHTML = "";
+  emailErrorHandle.innerHTML = "";
+}, false)
+
+
+</script>

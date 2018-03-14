@@ -1,0 +1,12 @@
+.formError{
+	color: red;
+}
+.formError input[type='text']{
+	border: 2px solid red;
+}
+.formSuccess{
+	color: green;
+}
+.formSuccess input[type='text']{
+	border: 2px solid green;
+}

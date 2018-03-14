@@ -1,0 +1,87 @@
+<p id="notice"><%= notice %></p>
+<div class="row">
+  <div class="col-md-8">
+    <h2>Instructors</h2>
+    <table class="table table-striped "
+
+    id="instructors_table">
+      <thead>
+        <tr>
+          <th>S No.</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Bio</th>
+          <th> Actions </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @instructors.each_with_index do |instructor, index| %>
+        <tr id=<%= instructor.id %> class="instructors">
+          <td><%= index + 1 %></td>
+          <td> 
+            <button type="button" class="btn btn-link" data-toggle="modal" data-target="#instructor<%=index%>"><%=instructor.name%></button>
+            <div class="modal fade" id="instructor<%=index%>" tabindex="-1" role="dialog" aria-labelledby="addBioLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="addBioLabel">Bio</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <%= render 'instructor-info',instructor: instructor%>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td><%= instructor.email %></td>
+          <td><%= instructor.bio %></td>
+          <td><button type="button" class="btn btn-link" data-toggle="modal" data-target="#instructor"><%=link_to 'Edit', instructors_path(instructor)%></button>
+            <div class="modal fade" id="instructor" tabindex="-1" role="dialog" aria-labelledby="addBioLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="addBioLabel">Edit Form</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <%= render 'instructor-edit',instructor: instructor%>
+                  </div>
+                </div>
+              </div>
+            </div>| <%= link_to 'Destroy', instructor, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-4">
+    <h3>Add Instructor</h3>
+    <%= render 'form', instructor: @instructor %>
+  </div>
+</div>
+
+<%#= link_to 'New Instructor', new_instructor_path %>
+<% data = {}
+@instructors.each do |instructor|
+  total = 0
+  instructor.courses.each do |course|
+    total += course.students.count
+  end
+  data[instructor.name] = total
+end
+%>
+<div class="row">
+  <div class="col-md-7">
+    <%= bar_chart(data) %>
+  </div>
+  <div class="col-md-5">
+    <%= pie_chart(data) %>
+  </div>
+</div>
+<%= will_paginate(@instructors, :renderer => WillPaginate::ActionView::Bootstrap4LinkRenderer) %>

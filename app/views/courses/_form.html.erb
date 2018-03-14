@@ -1,0 +1,41 @@
+<%= form_for(course, remote: true, id: "course_form") do |form| %>
+<% if course.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(course.errors.count, "error") %> prohibited this course from being saved:</h2>
+  <ul>
+    <% course.errors.full_messages.each do |message| %>
+    <li><%= message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+<div class="field">
+  <div class="form-group">
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :course_name, class: "form-control" %>
+  </div>
+</div>
+<div class="field">
+  <div class="form-group">
+    <%= form.label :description %>
+    <%= form.text_area :description, id: :course_description, class: "form-control" %>
+  </div>
+</div>
+<div class="field">
+  <div class="form-group">
+    <%= form.label :instructor_id %>
+    <%= form.collection_select :instructor_id, Instructor.all, :id, :name, {prompt: "Select Instructor"}, {class: "form-control"} %>
+  </div>
+</div>
+<div class="actions">
+  <%= form.submit "Submit", class: "btn btn-primary" %>
+</div>
+  <% end %>
+  <script type="text/javascript">
+    formHandle = document.getElementByID("course_form")
+    resetHandle = document.getElementByID('reset')
+    resetHandle.addEventListener("click", function(){
+      $('#addCourse').modal('show');
+      formHandle.reset()
+    },false)
+  </script>

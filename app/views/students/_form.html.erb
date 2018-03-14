@@ -1,0 +1,186 @@
+<%= form_for(student,local: true,remote: true, id:'form') do |form| %>
+  <% if student.errors.any? %>
+<div id="error_explanation">
+  <h2><%= pluralize(student.errors.count, "error") %> prohibited this student from being saved:</h2>
+
+  <ul>
+    <% student.errors.full_messages.each do |message| %>
+    <li><%= message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
+  <div class="form-group" id="nameGroup">
+    <%= form.label :name %>
+    <%= form.text_field :name, id: :student_name, class: "form-control" %>
+    <span id="nameError"></span>
+  </div>
+
+  <div class="form-group" id="emailGroup">
+    <%= form.label :email %>
+    <%= form.text_field :email, id: :student_email, class: "form-control" %>
+    <span id="emailError"></span>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :major %>
+    <%= form.text_field :major, id: :student_major, class: "form-control" %>
+  </div>
+
+  <h5>Select City</h5>
+  <div class="form-group">
+  <%= form.collection_select :city_id, City.all, :id, :name, {prompt:"Select City"}, {class: "form-control", id: :'student_city_id'}%> or<button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModal">
+        Add City
+    </button>
+
+<!-- {id: :student_city_id} -->
+  </div>
+
+  <h5>Select Courses</h5>
+  <div class="form-group">
+    <div class="form-check">
+  <%= form.collection_select :course_ids, Course.all, :id, :name,{prompt: "Select Course"}, {multiple: true, id: 'student_course_id', class: "form-control"}%>
+  </div>
+  </div>
+
+  <div class="actions">
+  <%= form.submit "Submit", class: "btn btn-success" %> or
+  <a href="#" id="reset">reset</a>
+</div>
+<% end %>
+
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add City</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <%= render '/cities/form', city: @city %>
+      </div>
+     
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#student_city_id').chosen()
+  $('#student_course_id').chosen()
+  var formHandle = document.getElementById('form');
+  var resetHandle = document.getElementById('reset'); 
+  var nameGroupHandle = document.getElementById('nameGroup')
+  var emailGroupHandle = document.getElementById('emailGroup')
+  var validator = {
+    nameValid: false,
+    emailValid: false
+  }
+  var nameFormat = /^(([A-Za-z]+[\-\']?)*([A-Za-z]+)?\s)+([A-Za-z]+[\-\']?)*([A-Za-z]+)?$/;
+  var emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  resetHandle.addEventListener('click', function(e){
+    e.preventDefault();
+    formHandle.reset();
+  },false);
+  var nameHandle = document.getElementById('student_name');
+  var nameErrorHandle = document.getElementById('nameError');
+// nameHandle.addEventListener('blur', function(){
+//   var xhr = new XMLHttpRequest();
+//   xhr.open('GET','/instructors/check_name_present?name=' + nameHandle.value, true)
+//   xhr.onreadystatechange = function(){
+//     if(xhr.readyState === 4 && xhr.status === 200){
+//       var response = JSON.parse(xhr.responseText);
+//       nameErrorHandle.innerHTML = response.msg;
+//     }
+//   }
+//   xhr.send()
+//   }, false);
+nameHandle.addEventListener('blur', function(){
+  nameValidation();
+}, false)
+nameHandle.addEventListener('focus', function(){
+  nameErrorHandle.innerHTML = "";
+},false);
+
+function nameValidation(){
+  if(nameHandle.value === ""){
+    validator.nameValid = false;
+    nameErrorHandle.innerHTML = "Cn't be blank"
+    nameGroupHandle.classList.remove('formSuccess')
+    nameGroupHandle.classList.add('formError')
+  }
+  else if(nameFormat.test(nameHandle)){
+    validator.nameValid = false;
+    nameErrorHandle.innerHTML = "Only Alphabets Plzz"
+    nameGroupHandle.classList.remove('formSuccess')
+    nameGroupHandle.classList.add('formError')
+  }
+  else{
+    validator.nameValid = true;
+    nameErrorHandle.innerHTML = "Nice"
+    nameGroupHandle.classList.remove('formError')
+    nameGroupHandle.classList.add('formSuccess')
+  }
+}
+
+var emailHandle = document.getElementById('student_email');
+var emailErrorHandle = document.getElementById('emailError');
+// emailHandle.addEventListener('blur', function(){
+//   var xhr = new XMLHttpRequest();
+//   xhr.open('GET','/instructors/check_email_present?email=' + emailHandle.value, true)
+//   xhr.onreadystatechange = function(){
+//     if(xhr.readyState === 4 && xhr.status === 200){
+//       var response = JSON.parse(xhr.responseText);
+//       emailErrorHandle.innerHTML = response.msg;
+//     }
+//   }
+//   xhr.send()
+//   }, false);
+emailHandle.addEventListener('blur', function(){
+  emailValidation();
+}, false)
+emailHandle.addEventListener('focus', function(){
+  emailErrorHandle.innerHTML = "";
+},false);
+
+function emailValidation(){
+  if(emailHandle.value === ""){
+    validator.emailValid = false;
+    emailErrorHandle.innerHTML = "Cn't be blank"
+    emailGroupHandle.classList.remove('formSuccess')
+    emailGroupHandle.classList.add('formError')
+  }
+  else if(emailFormat.test(emailHandle)){
+    validator.emailValid = false;
+    emailErrorHandle.innerHTML = "Vaild Email Plzz"
+    emailGroupHandle.classList.remove('formSuccess')
+    emailGroupHandle.classList.add('formError')
+  }
+  else{
+    validator.emailValid = true;
+    emailErrorHandle.innerHTML = "Nice"
+    emailGroupHandle.classList.remove('formError')
+    emailGroupHandle.classList.add('formSuccess')
+  }
+}
+formHandle.addEventListener('submit', function(e){
+  nameValidation();
+  emailValidation();
+  if(Object.values(validator).includes(false)){
+    e.preventDefault();
+        // setTimeout(function(){
+        //   submitHandle.disabled = false;
+        // }, 100);
+      }
+    }, false)
+document.querySelector('#reset').addEventListener('click', function(e){
+  e.preventDefault();
+  formHandle.reset();
+  nameErrorHandle.innerHTML = "";
+  emailErrorHandle.innerHTML = "";
+}, false)
+
+</script>
